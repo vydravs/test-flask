@@ -1,0 +1,22 @@
+{
+  "module": "modulefirst",
+  "function": "sort_func_first",
+  "data": {
+    "ERROR number 1": {
+      "ident": '2.1.11',
+      "value": " test test "
+    },
+    "ERROR number 2": {
+      "ident": '2.1.2',
+      "value": " bla bla "
+    },
+    "ERROR number 3": {
+      "ident": '2.2.2.3',
+      "value": " bla bla "
+    },
+    'ERROR number 4': {
+      "ident": '2.5',
+      "value": "Boo Boo Boo"
+    }
+  }
+}

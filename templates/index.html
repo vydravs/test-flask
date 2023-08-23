@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="icon" href="static/favicon.ico">
+</head>
+<body>
+    <div id="params">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3">Функции доступные для импорта</th>
+                </tr>
+                <tr>
+                    <td>Module name</td>
+                    <td>Function name</td>
+                    <td>Function docstring</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in table_list %}
+                <tr>
+                    <td>{{ i['module'] }}</td>
+                    <td>{{ i['f_name'] }}</td>
+                    <td>{{ i['docstring'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+<style>
+table,
+td {
+  border: 1px solid #333;
+}
+
+thead,
+tfoot {
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  vertical-align: middle;
+
+}
+</style>
