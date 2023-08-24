@@ -1,5 +1,5 @@
 # coding=utf8
-import ast
+import re
 import json
 import importlib
 from os import listdir
@@ -10,15 +10,6 @@ from flask import Flask, request, jsonify, render_template
 module_package = 'modules'
 
 
-def top_level_functions(body):
-    '''Возвращает список объектов функций из объекта ast '''
-    return (f for f in body if isinstance(f, ast.FunctionDef))
-
-def parse_ast(filename):
-    '''Возвращает объект ast из файла .py '''
-    with open(filename, "rt") as f:
-        return ast.parse(f.read(), filename=filename)
-
 def get_modules_list(module_package):
     '''Возвращает список файлов, в папке с модулями '''
     files_list = []
@@ -26,6 +17,38 @@ def get_modules_list(module_package):
         if isfile(f"{module_package}/{fl}"):
             files_list.append(fl)
     return files_list
+
+def get_func_list(file_with_path):
+    func_list = []
+    is_function = False
+    for line in open(file_with_path, 'r').readlines():
+        if re.search(r'^def \w+\(', line):
+            if is_function:
+                func_list.append(func_dict)
+            func_dict = {}
+            func_dict['name'] = line
+            func_dict['body'] = line
+            is_function = True
+            continue
+        if re.search(r'^    .+', line) and is_function:
+            func_dict['body'] += line
+            continue
+        if re.search(r'^\w.+', line) and is_function:
+            func_list.append(func_dict)
+            is_function = False
+            continue
+    if is_function:
+        func_list.append(func_dict)
+    for func in func_list:
+        f_name = re.search(r'def \w+\(', func['name'])
+        func['name'] = f_name[0][4:-1]
+        str_body = func['body'].replace('\n', '')
+        docstring = re.search(r'(\'{3}|\"{3}).+(\'{3}|\"{3})', str_body)
+        if docstring is not None:
+            func['docstring'] = ' '.join(docstring[0][3:-3].split())
+        else:
+            func['docstring'] = ''
+    return func_list
 
 
 app = Flask(__name__)
@@ -65,12 +88,13 @@ def route_html():
     '''Отображает таблицу с доступными модулями и функциями.'''
     table_list = []
     for filename in get_modules_list(module_package):
-        tree = parse_ast(f"{module_package}/{filename}")
-        func_dict = {}
-        for func in top_level_functions(tree.body):
+        func_list = get_func_list(f"{module_package}/{filename}")
+        for func in func_list:
+            func_dict = {}
             func_dict['module'] = filename[:-3]
-            func_dict['f_name'] = func.name
-            func_dict['docstring'] = ast.get_docstring(func).replace('\n', ' ')
+            func_dict['f_name'] = func['name']
+            func_dict['docstring'] = func['docstring']
+            func_dict['body'] = func['body']
             table_list.append(func_dict)
     return render_template('index.html', table_list=table_list), 200
 
