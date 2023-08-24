@@ -31,8 +31,8 @@ try:
                         url,
                         body=encoded_data,
                         headers={'Content-Type': 'application/json'})
-    print(resp.status)
-    print(resp.headers)
-    print(resp.data.decode("utf-8"))
+    print(f"Response status: {resp.status}\n")
+    print(f"Response headers: {resp.headers}\n")
+    print(f"Response body: {resp.data.decode('utf-8')}")
 except Exception as e:
     print(f"Error of POST-request: {e}")
