@@ -11,7 +11,7 @@ module_package = 'modules'
 
 
 def get_modules_list(module_package):
-    '''Возвращает список файлов, в папке с модулями '''
+    '''Возвращает список файлов, из папки с модулями.'''
     files_list = []
     for fl in listdir(module_package): 
         if isfile(f"{module_package}/{fl}"):
@@ -19,6 +19,7 @@ def get_modules_list(module_package):
     return files_list
 
 def get_func_list(file_with_path):
+    '''Возвращает список функций(имя, докстринг, тело).'''
     func_list = []
     is_function = False
     for line in open(file_with_path, 'r').readlines():
