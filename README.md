@@ -15,3 +15,11 @@ pip install urllib3
 pip freeze > requirements.txt
 python app.py
 ```
+
+### Build Docker image, run and stop it
+```
+docker duild .
+docker images
+docker run --rm -d -p 5000:80 <IMAGE_ID>
+docker stop <IMAGE_ID>
+```
