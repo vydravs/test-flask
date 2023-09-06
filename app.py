@@ -51,6 +51,10 @@ def get_func_list(file_with_path):
             func['docstring'] = ''
     return func_list
 
+def ret_error(txt, code):
+    txt_dict = {"error": txt}
+    return json.dumps(txt_dict), code,  {'ContentType':'application/json'}
+
 
 app = Flask(__name__)
 
@@ -67,7 +71,13 @@ def route_json():
     if request.method == 'POST':
         content = request.get_json(silent=True)
         if type(content) is dict:
-            # Moduele name in package mast starts with dot
+            if not 'module' in content:
+                return ret_error('No module in request JSON', 400)
+            if not 'function' in content:
+                return ret_error('No function in request JSON', 400)
+            if not 'data' in content:
+                return ret_error('No data in request JSON', 400)
+            # Moduele name in the package must starts with a dot
             m_name = f".{content['module']}"
             try:
                 module_name = importlib.import_module(m_name,
@@ -80,9 +90,9 @@ def route_json():
                 return f"Unknown function {content['function']}\n{e}", 500
             return json.dumps(content), 200, {'ContentType':'application/json'}
         else:
-            return '<h1>POST data must be JSON</h1>'
+            return ret_error('POST data must be JSON', 400)
     else:
-        return '<h1>Route /json/ apply only POST request</h1>'
+        return ret_error('Route /json/ apply only POST request', 400)
 
 @app.route('/html', methods = ['GET'])
 def route_html():
